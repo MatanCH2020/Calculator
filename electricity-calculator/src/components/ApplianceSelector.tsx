@@ -15,17 +15,17 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  InputAdornment,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import CategoryIcon from '@mui/icons-material/Category';
 import ElectricBoltIcon from '@mui/icons-material/ElectricBolt';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import SearchIcon from '@mui/icons-material/Search';
+import SaveIcon from '@mui/icons-material/Save';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { categories, defaultAppliances, Appliance } from '../data/appliances';
 
 interface ApplianceSelectorProps {
@@ -34,21 +34,22 @@ interface ApplianceSelectorProps {
 
 const ApplianceSelector: React.FC<ApplianceSelectorProps> = ({ onApplianceAdd }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [customName, setCustomName] = useState('');
-  const [customPower, setCustomPower] = useState<number>(0);
   const [hours, setHours] = useState<number>(1);
   const [isCustomDialog, setIsCustomDialog] = useState(false);
   const [selectedAppliance, setSelectedAppliance] = useState<Appliance | null>(null);
+  const [customName, setCustomName] = useState('');
+  const [customPower, setCustomPower] = useState<number>(0);
+  const [savedLists, setSavedLists] = useState<{ name: string; appliances: Appliance[] }[]>([]);
+  const [isLoadListDialog, setIsLoadListDialog] = useState(false);
+  const [newListName, setNewListName] = useState('');
+  const [isSaveListDialog, setIsSaveListDialog] = useState(false);
 
-  // Filter appliances based on search query and selected category
   const filteredAppliances = useMemo(() => {
     return defaultAppliances.filter(appliance => {
-      const matchesSearch = appliance.name.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = !selectedCategory || appliance.category === selectedCategory;
-      return matchesSearch && matchesCategory;
+      return matchesCategory;
     });
-  }, [searchQuery, selectedCategory]);
+  }, [selectedCategory]);
 
   const handleAddAppliance = () => {
     if (selectedAppliance) {
@@ -68,6 +69,7 @@ const ApplianceSelector: React.FC<ApplianceSelectorProps> = ({ onApplianceAdd })
         power: customPower,
         hours,
         category: selectedCategory || 'שונות',
+        custom: true,
       });
       setIsCustomDialog(false);
       setCustomName('');
@@ -77,51 +79,30 @@ const ApplianceSelector: React.FC<ApplianceSelectorProps> = ({ onApplianceAdd })
     }
   };
 
+  const handleSaveList = () => {
+    if (newListName) {
+      // Here you would get the current appliances from the parent component
+      // For now, we'll just save a dummy list
+      setSavedLists([...savedLists, { name: newListName, appliances: [] }]);
+      setNewListName('');
+      setIsSaveListDialog(false);
+    }
+  };
+
+  const handleLoadList = (list: { name: string; appliances: Appliance[] }) => {
+    list.appliances.forEach(appliance => onApplianceAdd(appliance));
+    setIsLoadListDialog(false);
+  };
+
   return (
-    <Card elevation={0} className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200">
+    <Card elevation={3} className="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200">
       <CardContent>
-        <Typography variant="h5" className="mb-4 font-bold text-gray-800 flex items-center gap-2">
-          <CategoryIcon className="text-purple-500" />
+        <Typography variant="h5" className="mb-6 font-bold text-gray-800 text-center">
+          <ElectricBoltIcon className="text-blue-500 mb-1 ml-2" />
           בחירת מכשירי חשמל
         </Typography>
 
-        <Grid container spacing={3} className="mb-4">
-          <Grid item xs={12} md={4}>
-            <FormControl fullWidth>
-              <InputLabel>קטגוריה</InputLabel>
-              <Select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                label="קטגוריה"
-                className="bg-white"
-              >
-                <MenuItem value="">הכל</MenuItem>
-                {categories.map((category) => (
-                  <MenuItem key={category} value={category}>{category}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          
-          <Grid item xs={12} md={8}>
-            <TextField
-              fullWidth
-              label="חיפוש מכשיר"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-white"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon className="text-gray-400" />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Grid>
-        </Grid>
-
-        <Box className="mb-4">
+        <Box className="mb-6">
           <Autocomplete
             value={selectedAppliance}
             onChange={(_, newValue) => {
@@ -135,16 +116,19 @@ const ApplianceSelector: React.FC<ApplianceSelectorProps> = ({ onApplianceAdd })
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="בחר מכשיר חשמל"
-                className="bg-white"
+                label="חפש והוסף מכשיר חשמל"
+                className="bg-white rounded-lg"
+                variant="outlined"
               />
             )}
             renderOption={(props, option) => (
-              <li {...props}>
-                <Box>
-                  <Typography variant="subtitle2">{option.name}</Typography>
+              <li {...props} className="hover:bg-blue-50">
+                <Box className="py-2">
+                  <Typography variant="subtitle1" className="font-medium">
+                    {option.name}
+                  </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {option.power}W, {option.hours} שעות ביום
+                    {option.power}W | {option.category} | {option.hours} שעות ביום
                   </Typography>
                 </Box>
               </li>
@@ -152,7 +136,7 @@ const ApplianceSelector: React.FC<ApplianceSelectorProps> = ({ onApplianceAdd })
           />
         </Box>
 
-        <Grid container spacing={2} className="mb-4">
+        <Grid container spacing={2} className="mb-6">
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
@@ -160,12 +144,11 @@ const ApplianceSelector: React.FC<ApplianceSelectorProps> = ({ onApplianceAdd })
               label="שעות שימוש ביום"
               value={hours}
               onChange={(e) => setHours(Math.max(0, parseFloat(e.target.value) || 0))}
-              className="bg-white"
+              className="bg-white rounded-lg"
+              variant="outlined"
               InputProps={{
                 startAdornment: (
-                  <InputAdornment position="start">
-                    <AccessTimeIcon className="text-gray-400" />
-                  </InputAdornment>
+                  <AccessTimeIcon className="text-gray-400 ml-2" />
                 ),
               }}
             />
@@ -175,7 +158,7 @@ const ApplianceSelector: React.FC<ApplianceSelectorProps> = ({ onApplianceAdd })
               variant="contained"
               onClick={handleAddAppliance}
               disabled={!selectedAppliance}
-              className="flex-1 bg-purple-600 hover:bg-purple-700"
+              className="flex-1 bg-blue-600 hover:bg-blue-700"
               startIcon={<AddIcon />}
             >
               הוסף מכשיר
@@ -183,15 +166,15 @@ const ApplianceSelector: React.FC<ApplianceSelectorProps> = ({ onApplianceAdd })
             <Tooltip title="הוסף מכשיר מותאם אישית">
               <IconButton
                 onClick={() => setIsCustomDialog(true)}
-                className="bg-blue-50 hover:bg-blue-100"
+                className="bg-purple-50 hover:bg-purple-100"
               >
-                <ElectricBoltIcon className="text-blue-500" />
+                <ElectricBoltIcon className="text-purple-500" />
               </IconButton>
             </Tooltip>
           </Grid>
         </Grid>
 
-        <Box className="flex flex-wrap gap-2">
+        <Box className="flex flex-wrap gap-2 mb-6">
           {categories.map((cat) => (
             <Chip
               key={cat}
@@ -199,16 +182,36 @@ const ApplianceSelector: React.FC<ApplianceSelectorProps> = ({ onApplianceAdd })
               onClick={() => setSelectedCategory(cat === selectedCategory ? '' : cat)}
               className={`cursor-pointer ${
                 cat === selectedCategory
-                  ? 'bg-purple-100 text-purple-800'
-                  : 'bg-white hover:bg-purple-50'
+                  ? 'bg-blue-100 text-blue-800'
+                  : 'bg-white hover:bg-blue-50'
               }`}
             />
           ))}
         </Box>
+
+        <Box className="flex justify-end gap-2">
+          <Button
+            variant="outlined"
+            startIcon={<SaveIcon />}
+            onClick={() => setIsSaveListDialog(true)}
+            className="text-blue-600 border-blue-600"
+          >
+            שמור רשימה
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<FolderOpenIcon />}
+            onClick={() => setIsLoadListDialog(true)}
+            className="text-purple-600 border-purple-600"
+          >
+            טען רשימה
+          </Button>
+        </Box>
       </CardContent>
 
+      {/* Custom Appliance Dialog */}
       <Dialog open={isCustomDialog} onClose={() => setIsCustomDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle className="bg-gradient-to-r from-purple-50 to-blue-50">
+        <DialogTitle className="bg-gradient-to-r from-blue-50 to-purple-50">
           הוספת מכשיר מותאם אישית
         </DialogTitle>
         <DialogContent className="space-y-4 pt-4">
@@ -227,19 +230,14 @@ const ApplianceSelector: React.FC<ApplianceSelectorProps> = ({ onApplianceAdd })
             onChange={(e) => setCustomPower(Math.max(0, parseInt(e.target.value) || 0))}
             className="bg-white"
           />
-          <FormControl fullWidth>
-            <InputLabel>קטגוריה</InputLabel>
-            <Select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              label="קטגוריה"
-              className="bg-white"
-            >
-              {categories.map((cat) => (
-                <MenuItem key={cat} value={cat}>{cat}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            value={selectedCategory}
+            onChange={(_, newValue) => setSelectedCategory(newValue || '')}
+            options={categories}
+            renderInput={(params) => (
+              <TextField {...params} label="קטגוריה" className="bg-white" />
+            )}
+          />
           <TextField
             fullWidth
             type="number"
@@ -256,10 +254,78 @@ const ApplianceSelector: React.FC<ApplianceSelectorProps> = ({ onApplianceAdd })
           <Button
             onClick={handleAddCustomAppliance}
             variant="contained"
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-blue-600 hover:bg-blue-700"
             disabled={!customName || customPower <= 0}
           >
             הוסף מכשיר
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Save List Dialog */}
+      <Dialog open={isSaveListDialog} onClose={() => setIsSaveListDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle className="bg-gradient-to-r from-blue-50 to-purple-50">
+          שמירת רשימת מכשירים
+        </DialogTitle>
+        <DialogContent className="pt-4">
+          <TextField
+            fullWidth
+            label="שם הרשימה"
+            value={newListName}
+            onChange={(e) => setNewListName(e.target.value)}
+            className="bg-white"
+          />
+        </DialogContent>
+        <DialogActions className="bg-gray-50">
+          <Button onClick={() => setIsSaveListDialog(false)} color="inherit">
+            ביטול
+          </Button>
+          <Button
+            onClick={handleSaveList}
+            variant="contained"
+            className="bg-blue-600 hover:bg-blue-700"
+            disabled={!newListName}
+          >
+            שמור
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Load List Dialog */}
+      <Dialog open={isLoadListDialog} onClose={() => setIsLoadListDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle className="bg-gradient-to-r from-blue-50 to-purple-50">
+          טעינת רשימת מכשירים
+        </DialogTitle>
+        <DialogContent className="pt-4">
+          <List>
+            {savedLists.map((list, index) => (
+              <ListItem key={index} className="hover:bg-gray-50">
+                <ListItemText primary={list.name} />
+                <ListItemSecondaryAction>
+                  <IconButton
+                    edge="end"
+                    onClick={() => handleLoadList(list)}
+                    className="text-blue-600"
+                  >
+                    <FolderOpenIcon />
+                  </IconButton>
+                  <IconButton
+                    edge="end"
+                    onClick={() => {
+                      setSavedLists(savedLists.filter((_, i) => i !== index));
+                    }}
+                    className="text-red-600"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            ))}
+          </List>
+        </DialogContent>
+        <DialogActions className="bg-gray-50">
+          <Button onClick={() => setIsLoadListDialog(false)} color="inherit">
+            סגור
           </Button>
         </DialogActions>
       </Dialog>

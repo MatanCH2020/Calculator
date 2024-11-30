@@ -1,9 +1,4 @@
-export interface Appliance {
-  name: string;
-  power: number;
-  hours: number;
-  category: string;
-}
+import { Appliance } from '../types/Appliance';
 
 export const categories = [
   'מטבח',

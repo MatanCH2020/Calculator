@@ -1,42 +1,59 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Container, Box, Paper, Typography, Button } from '@mui/material';
+import { Container, Box, Paper, Typography, Button, useTheme } from '@mui/material';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import ApplianceSelector from './components/ApplianceSelector';
 import ConsumptionCalculator from './components/ConsumptionCalculator';
 import ConsumptionChart from './components/ConsumptionChart';
+import { categories, defaultAppliances } from './data/appliances';
+import { Appliance } from './types/Appliance';
+import './App.css';
 
-interface Appliance {
-  name: string;
-  power: number;
-  hours: number;
-  category: string;
-  custom?: boolean;
-}
-
-const App: React.FC = () => {
-  const [selectedAppliances, setSelectedAppliances] = useState<Appliance[]>(() => {
-    const saved = localStorage.getItem('selectedAppliances');
-    return saved ? JSON.parse(saved) : [];
-  });
+function App() {
+  const [selectedAppliances, setSelectedAppliances] = useState<Appliance[]>([]);
+  const [electricityRate, setElectricityRate] = useState<number>(0.4831);
   const containerRef = useRef<HTMLDivElement>(null);
+  const theme = useTheme();
 
+  // Load saved appliances from localStorage on mount
+  useEffect(() => {
+    const savedAppliances = localStorage.getItem('selectedAppliances');
+    if (savedAppliances) {
+      setSelectedAppliances(JSON.parse(savedAppliances));
+    }
+
+    const savedRate = localStorage.getItem('electricityRate');
+    if (savedRate) {
+      setElectricityRate(parseFloat(savedRate));
+    }
+  }, []);
+
+  // Save appliances to localStorage when they change
   useEffect(() => {
     localStorage.setItem('selectedAppliances', JSON.stringify(selectedAppliances));
   }, [selectedAppliances]);
+
+  // Save rate to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('electricityRate', electricityRate.toString());
+  }, [electricityRate]);
 
   const handleApplianceAdd = (appliance: Appliance) => {
     setSelectedAppliances(prev => [...prev, appliance]);
   };
 
-  const handleApplianceDelete = (applianceName: string) => {
-    setSelectedAppliances(prev => prev.filter(a => a.name !== applianceName));
+  const handleApplianceRemove = (index: number) => {
+    setSelectedAppliances(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleExportImage = async () => {
+  const handleRateChange = (newRate: number) => {
+    setElectricityRate(newRate);
+  };
+
+  const exportImage = async () => {
     if (!containerRef.current) return;
     
     try {
-      const { default: html2canvas } = await import('html2canvas');
+      const html2canvas = (await import('html2canvas')).default;
       const canvas = await html2canvas(containerRef.current);
       const image = canvas.toDataURL('image/png', 1.0);
       
@@ -53,48 +70,58 @@ const App: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" className="py-8" ref={containerRef}>
-      <Box className="space-y-8">
-        <Typography variant="h4" className="text-center font-bold text-gray-800 mb-8">
-          מחשבון צריכת חשמל
-        </Typography>
+    <Container maxWidth="lg" className="py-8">
+      <Typography 
+        variant="h4" 
+        className="text-center mb-8 font-bold text-gray-800"
+        style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.1)' }}
+      >
+        מחשבון צריכת חשמל חכם
+      </Typography>
 
-        <Box className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Box className="space-y-8">
-            <Paper elevation={0} className="p-6 shadow-sm border border-gray-100">
-              <ApplianceSelector onApplianceAdd={handleApplianceAdd} />
-            </Paper>
-          </Box>
+      <Box className="grid gap-6">
+        <Paper 
+          elevation={3} 
+          className="p-6 bg-gradient-to-br from-blue-50 to-purple-50"
+        >
+          <ApplianceSelector onApplianceAdd={handleApplianceAdd} />
+        </Paper>
 
-          <Box className="space-y-8">
+        <div ref={containerRef}>
+          <Paper 
+            elevation={3} 
+            className="p-6 bg-gradient-to-br from-purple-50 to-blue-50"
+          >
             <ConsumptionCalculator
               appliances={selectedAppliances}
-              onDelete={handleApplianceDelete}
+              onApplianceRemove={handleApplianceRemove}
+              electricityRate={electricityRate}
+              onRateChange={handleRateChange}
             />
-          </Box>
-        </Box>
+          </Paper>
 
-        {selectedAppliances.length > 0 && (
-          <>
-            <Paper elevation={0} className="p-6 shadow-sm border border-gray-100">
+          {selectedAppliances.length > 0 && (
+            <Paper 
+              elevation={3} 
+              className="p-6 mt-6 bg-gradient-to-br from-blue-50 to-purple-50"
+            >
               <ConsumptionChart appliances={selectedAppliances} />
+              <Box className="flex justify-end mt-4">
+                <Button
+                  variant="outlined"
+                  startIcon={<SaveAltIcon />}
+                  onClick={exportImage}
+                  className="text-blue-600 border-blue-600"
+                >
+                  שמור כתמונה
+                </Button>
+              </Box>
             </Paper>
-
-            <Box className="flex justify-center">
-              <Button
-                variant="contained"
-                onClick={handleExportImage}
-                startIcon={<SaveAltIcon />}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                שמור כתמונה
-              </Button>
-            </Box>
-          </>
-        )}
+          )}
+        </div>
       </Box>
     </Container>
   );
-};
+}
 
 export default App;
