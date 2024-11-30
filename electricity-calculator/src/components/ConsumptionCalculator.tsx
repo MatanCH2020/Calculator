@@ -2,29 +2,25 @@ import React from 'react';
 import {
   Box,
   Typography,
+  IconButton,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  IconButton,
-  TextField,
   Paper,
-  Tooltip,
+  Card,
+  CardContent,
   Grid,
+  Tooltip,
+  TextField,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ElectricBoltIcon from '@mui/icons-material/ElectricBolt';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import PaidIcon from '@mui/icons-material/Paid';
-
-interface Appliance {
-  name: string;
-  power: number;
-  hours: number;
-  category: string;
-}
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import { Appliance } from '../types/Appliance';
 
 interface ConsumptionCalculatorProps {
   appliances: Appliance[];
@@ -57,7 +53,7 @@ const ConsumptionCalculator: React.FC<ConsumptionCalculatorProps> = ({
   return (
     <Box>
       <Typography variant="h5" className="mb-6 font-bold text-gray-800 text-center">
-        <PaidIcon className="text-green-500 mb-1 ml-2" />
+        <CurrencyExchangeIcon className="text-green-500 mb-1 ml-2" />
         חישוב צריכת חשמל ועלויות
       </Typography>
 
@@ -71,7 +67,7 @@ const ConsumptionCalculator: React.FC<ConsumptionCalculatorProps> = ({
           variant="outlined"
           fullWidth
           InputProps={{
-            startAdornment: <PaidIcon className="text-gray-400 ml-2" />,
+            startAdornment: <CurrencyExchangeIcon className="text-gray-400 ml-2" />,
           }}
         />
       </Box>

@@ -4,29 +4,28 @@ import {
   Typography,
   TextField,
   Button,
-  Card,
-  CardContent,
-  Grid,
-  Autocomplete,
-  Chip,
-  IconButton,
-  Tooltip,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
+  IconButton,
+  Chip,
   List,
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
+  Menu,
+  MenuItem,
+  Tooltip,
+  Autocomplete,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import ElectricBoltIcon from '@mui/icons-material/ElectricBolt';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import SearchIcon from '@mui/icons-material/Search';
 import SaveIcon from '@mui/icons-material/Save';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { categories, defaultAppliances, Appliance } from '../data/appliances';
+import { categories, defaultAppliances } from '../data/appliances';
+import { Appliance } from '../types/Appliance';
 
 interface ApplianceSelectorProps {
   onApplianceAdd: (appliance: Appliance) => void;
@@ -95,10 +94,10 @@ const ApplianceSelector: React.FC<ApplianceSelectorProps> = ({ onApplianceAdd })
   };
 
   return (
-    <Card elevation={3} className="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200">
-      <CardContent>
+    <Box className="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200">
+      <Box className="p-6">
         <Typography variant="h5" className="mb-6 font-bold text-gray-800 text-center">
-          <ElectricBoltIcon className="text-blue-500 mb-1 ml-2" />
+          <SearchIcon className="text-blue-500 mb-1 ml-2" />
           בחירת מכשירי חשמל
         </Typography>
 
@@ -136,43 +135,39 @@ const ApplianceSelector: React.FC<ApplianceSelectorProps> = ({ onApplianceAdd })
           />
         </Box>
 
-        <Grid container spacing={2} className="mb-6">
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              type="number"
-              label="שעות שימוש ביום"
-              value={hours}
-              onChange={(e) => setHours(Math.max(0, parseFloat(e.target.value) || 0))}
-              className="bg-white rounded-lg"
-              variant="outlined"
-              InputProps={{
-                startAdornment: (
-                  <AccessTimeIcon className="text-gray-400 ml-2" />
-                ),
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} md={6} className="flex gap-2">
-            <Button
-              variant="contained"
-              onClick={handleAddAppliance}
-              disabled={!selectedAppliance}
-              className="flex-1 bg-blue-600 hover:bg-blue-700"
-              startIcon={<AddIcon />}
+        <Box className="flex gap-2 mb-6">
+          <TextField
+            fullWidth
+            type="number"
+            label="שעות שימוש ביום"
+            value={hours}
+            onChange={(e) => setHours(Math.max(0, parseFloat(e.target.value) || 0))}
+            className="bg-white rounded-lg"
+            variant="outlined"
+            InputProps={{
+              startAdornment: (
+                <SearchIcon className="text-gray-400 ml-2" />
+              ),
+            }}
+          />
+          <Button
+            variant="contained"
+            onClick={handleAddAppliance}
+            disabled={!selectedAppliance}
+            className="flex-1 bg-blue-600 hover:bg-blue-700"
+            startIcon={<AddIcon />}
+          >
+            הוסף מכשיר
+          </Button>
+          <Tooltip title="הוסף מכשיר מותאם אישית">
+            <IconButton
+              onClick={() => setIsCustomDialog(true)}
+              className="bg-purple-50 hover:bg-purple-100"
             >
-              הוסף מכשיר
-            </Button>
-            <Tooltip title="הוסף מכשיר מותאם אישית">
-              <IconButton
-                onClick={() => setIsCustomDialog(true)}
-                className="bg-purple-50 hover:bg-purple-100"
-              >
-                <ElectricBoltIcon className="text-purple-500" />
-              </IconButton>
-            </Tooltip>
-          </Grid>
-        </Grid>
+              <SearchIcon className="text-purple-500" />
+            </IconButton>
+          </Tooltip>
+        </Box>
 
         <Box className="flex flex-wrap gap-2 mb-6">
           {categories.map((cat) => (
@@ -207,7 +202,7 @@ const ApplianceSelector: React.FC<ApplianceSelectorProps> = ({ onApplianceAdd })
             טען רשימה
           </Button>
         </Box>
-      </CardContent>
+      </Box>
 
       {/* Custom Appliance Dialog */}
       <Dialog open={isCustomDialog} onClose={() => setIsCustomDialog(false)} maxWidth="sm" fullWidth>
@@ -329,7 +324,7 @@ const ApplianceSelector: React.FC<ApplianceSelectorProps> = ({ onApplianceAdd })
           </Button>
         </DialogActions>
       </Dialog>
-    </Card>
+    </Box>
   );
 };
 

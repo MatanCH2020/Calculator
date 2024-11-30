@@ -2,7 +2,7 @@
   "name": "electricity-calculator",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://matanch2020.github.io/electricity-calculator",
+  "homepage": "https://matanch2020.github.io/Calculator",
   "dependencies": {
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",

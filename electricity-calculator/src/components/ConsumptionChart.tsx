@@ -1,25 +1,20 @@
 import React from 'react';
+import { Box, Typography, Grid, Paper } from '@mui/material';
 import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  Legend,
   BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
 } from 'recharts';
-import { Box, Typography, Grid, Paper } from '@mui/material';
-
-interface Appliance {
-  name: string;
-  power: number;
-  hours: number;
-  category: string;
-}
+import InsightsIcon from '@mui/icons-material/Insights';
+import { Appliance } from '../types/Appliance';
 
 interface ConsumptionChartProps {
   appliances: Appliance[];
