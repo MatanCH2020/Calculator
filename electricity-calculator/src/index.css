@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200;300;400;500;600;700;800&display=swap');
+
+:root {
+  direction: rtl;
+}
+
+body {
+  margin: 0;
+  font-family: 'Assistant', sans-serif;
+  background-color: #f8fafc;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.rtl {
+  direction: rtl;
+}
+
+.ltr {
+  direction: ltr;
+}
+
+/* Fix for MUI components in RTL */
+.MuiSelect-select,
+.MuiInputBase-input {
+  text-align: right !important;
+}
+
+.MuiFormLabel-root {
+  right: 1.75rem !important;
+  left: auto !important;
+  transform-origin: right !important;
+}
+
+.MuiInputLabel-shrink {
+  transform: translate(0, -1.5px) scale(0.75) !important;
+}
