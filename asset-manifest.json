@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/electricity-calculator/static/css/main.93dda8a5.css",
-    "main.js": "/electricity-calculator/static/js/main.15bffd8f.js",
-    "static/js/239.a4bc2111.chunk.js": "/electricity-calculator/static/js/239.a4bc2111.chunk.js",
-    "static/js/453.619aaf41.chunk.js": "/electricity-calculator/static/js/453.619aaf41.chunk.js",
-    "index.html": "/electricity-calculator/index.html",
-    "main.93dda8a5.css.map": "/electricity-calculator/static/css/main.93dda8a5.css.map",
-    "main.15bffd8f.js.map": "/electricity-calculator/static/js/main.15bffd8f.js.map",
-    "239.a4bc2111.chunk.js.map": "/electricity-calculator/static/js/239.a4bc2111.chunk.js.map",
-    "453.619aaf41.chunk.js.map": "/electricity-calculator/static/js/453.619aaf41.chunk.js.map"
+    "main.css": "/Calculator/static/css/main.93dda8a5.css",
+    "main.js": "/Calculator/static/js/main.edd46937.js",
+    "static/js/239.a4bc2111.chunk.js": "/Calculator/static/js/239.a4bc2111.chunk.js",
+    "static/js/453.619aaf41.chunk.js": "/Calculator/static/js/453.619aaf41.chunk.js",
+    "index.html": "/Calculator/index.html",
+    "main.93dda8a5.css.map": "/Calculator/static/css/main.93dda8a5.css.map",
+    "main.edd46937.js.map": "/Calculator/static/js/main.edd46937.js.map",
+    "239.a4bc2111.chunk.js.map": "/Calculator/static/js/239.a4bc2111.chunk.js.map",
+    "453.619aaf41.chunk.js.map": "/Calculator/static/js/453.619aaf41.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.93dda8a5.css",
-    "static/js/main.15bffd8f.js"
+    "static/js/main.edd46937.js"
   ]
 }
